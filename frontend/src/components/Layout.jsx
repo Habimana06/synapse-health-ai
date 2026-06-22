@@ -1,6 +1,10 @@
 import { Outlet, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { getDashboardPath } from '../context/AuthContext';
 
 export default function Layout() {
+  const { user } = useAuth();
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -20,12 +24,16 @@ export default function Layout() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button type="button" className="hidden text-sm font-medium text-synapse-navy sm:block">
-              Sign In
-            </button>
-            <button type="button" className="btn-primary !px-4 !py-2 text-xs sm:!px-6 sm:!py-3 sm:text-sm">
-              Get Started
-            </button>
+            {user ? (
+              <Link to={getDashboardPath(user.role)} className="btn-primary !px-4 !py-2 text-xs sm:!px-6 sm:!py-3 sm:text-sm">
+                My Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="hidden text-sm font-medium text-synapse-navy sm:block">Sign In</Link>
+                <Link to="/register" className="btn-primary !px-4 !py-2 text-xs sm:!px-6 sm:!py-3 sm:text-sm">Get Started</Link>
+              </>
+            )}
           </div>
         </div>
       </header>

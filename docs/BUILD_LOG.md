@@ -1,85 +1,38 @@
 # Synapse Health AI — Build Log
 
-Engineering log for incremental development. Each step is committed and pushed to GitHub when complete.
+## Step 1 — Project Foundation ✅
+Monorepo structure, MySQL schema, backend skeleton, landing page.
 
----
+## Step 2–10 — Full System Build ✅ (2026-06-23)
 
-## Step 1 — Project Foundation (2026-06-22)
+**Complete platform delivered in one release:**
 
-**Goal:** Establish repository structure, database schema, backend skeleton, and frontend shell.
+### Backend (Express REST API)
+- JWT authentication & RBAC (patient, doctor, pharmacist, admin)
+- Patient health profile APIs (allergies, history, labs, vaccinations, prescriptions)
+- Doctor portal (patients, prescriptions, lab reports, AI recommendations)
+- Pharmacist portal (inventory, prescriptions, dispense workflow)
+- Admin portal (users, pharmacies, hospitals, medicines, analytics)
+- Public pharmacy locator & medicine availability search
+- Drug interaction checker
+- AI services: symptom analyzer, drug recommendations, health risk, multilingual chat
+- OpenAI integration with intelligent fallback when no API key
 
-**Deliverables:**
-- [x] Monorepo folder structure (`frontend/`, `backend/`, `database/`, `docs/`)
-- [x] MySQL database schema with all core tables
-- [x] Express.js backend with health check and DB config
-- [x] React + Vite + Tailwind frontend with landing page
-- [x] README and environment templates
-- [x] Brand assets (logo from Resources)
+### Frontend (React + Tailwind)
+- Brand colors from logo: Navy `#002147`, Teal `#00A896`, Green `#76C043`
+- **Patient layout: top navbar** navigation
+- **Doctor / Pharmacist / Admin: sidebar** navigation
+- Full dashboards and feature pages for all roles
+- Login/Register with demo accounts
 
-**Next:** Step 2 — Authentication & RBAC (JWT, user registration, login)
+### Docker
+- `docker-compose up` runs MySQL + backend + frontend (nginx)
+- Auto-loads schema and seed data on first run
 
----
-
-## Step 2 — Authentication & RBAC (planned)
-
-- User registration (patient, doctor, pharmacist, admin)
-- JWT login/logout
-- Role-based middleware
-- Protected routes on frontend
-
----
-
-## Step 3 — Patient Digital Health Profile (planned)
-
-- CRUD for medical history, allergies, lab results, vaccinations
-- Patient dashboard UI
-
----
-
-## Step 4 — AI Symptom Analyzer (planned)
-
-- OpenAI integration
-- Symptom input form
-- Condition suggestions (decision support only)
-
----
-
-## Step 5 — Drug Recommendation & Interaction Detection (planned)
-
-- Drug recommendation API
-- Interaction checker against allergies and current meds
-
----
-
-## Step 6 — Healthcare Chat Assistant (planned)
-
-- Multilingual chat (EN, Kinyarwanda, FR)
-- OpenAI-powered responses
-
----
-
-## Step 7 — Pharmacy Locator & Inventory (planned)
-
-- Pharmacy CRUD (admin)
-- Google Maps integration
-- Real-time stock updates
-
----
-
-## Step 8 — Role Dashboards (planned)
-
-- Doctor, pharmacist, admin dashboards
-- Prescription workflow
-
----
-
-## Step 9 — Healthcare Analytics (planned)
-
-- Disease trends, medicine demand, regional stats
-
----
-
-## Step 10 — Polish & Deployment Docs (planned)
-
-- Error handling, validation, API docs
-- Docker/deployment guide
+### Demo Accounts
+| Role | Email | Password |
+|------|-------|----------|
+| Patient | patient@synapse.rw | Password123! |
+| Doctor | doctor@synapse.rw | Password123! |
+| Pharmacist | pharmacist@synapse.rw | Password123! |
+| Admin | admin@synapse.rw | Password123! |
