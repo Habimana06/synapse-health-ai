@@ -1,17 +1,18 @@
 -- Synapse Health AI — Seed Data
--- Default password for all demo accounts: Password123!
+-- Admin password is bcrypt-hashed (never stored in plain text)
 
 USE synapse_health_ai;
 
-SET @pwd = '$2a$10$WcwdqhLyd6UAVbfujotd4uHoKhqr6X7tAykLfo2uPrS1rapRVqTH6';
+-- Primary admin: hntaganira06@gmail.com / password hashed below
+SET @admin_pwd = '$2a$10$v.UaTWWaO7x.PttFPsgVx.EVxuTlzKg3c29Vb6AO94bf224rNUhuq';
+SET @demo_pwd = '$2a$10$WcwdqhLyd6UAVbfujotd4uHoKhqr6X7tAykLfo2uPrS1rapRVqTH6';
 
--- Admin
 INSERT INTO users (email, password_hash, role, first_name, last_name, phone, language) VALUES
-  ('admin@synapse.rw', @pwd, 'admin', 'Jean', 'Mukamana', '+250788000001', 'en');
+  ('hntaganira06@gmail.com', @admin_pwd, 'admin', 'Hab', 'Admin', '+250788000000', 'en');
 
--- Doctors
+-- Demo doctor (created by admin workflow — not self-registration)
 INSERT INTO users (email, password_hash, role, first_name, last_name, phone, language) VALUES
-  ('doctor@synapse.rw', @pwd, 'doctor', 'Patrick', 'Niyonsaba', '+250788000002', 'en');
+  ('doctor@synapse.rw', @demo_pwd, 'doctor', 'Patrick', 'Niyonsaba', '+250788000002', 'en');
 
 INSERT INTO hospitals (name, address, city, district, phone) VALUES
   ('King Faisal Hospital', 'KG 544 St, Kigali', 'Kigali', 'Gasabo', '+250788111111');
@@ -19,23 +20,20 @@ INSERT INTO hospitals (name, address, city, district, phone) VALUES
 INSERT INTO doctor_profiles (user_id, hospital_id, license_number, specialization, years_experience) VALUES
   ((SELECT id FROM users WHERE email = 'doctor@synapse.rw'), 1, 'RMDA-DOC-001', 'General Medicine', 12);
 
--- Pharmacist
 INSERT INTO users (email, password_hash, role, first_name, last_name, phone, language) VALUES
-  ('pharmacist@synapse.rw', @pwd, 'pharmacist', 'Alice', 'Uwase', '+250788000003', 'rw');
+  ('pharmacist@synapse.rw', @demo_pwd, 'pharmacist', 'Alice', 'Uwase', '+250788000003', 'rw');
 
 INSERT INTO pharmacist_profiles (user_id, pharmacy_id, license_number) VALUES
   ((SELECT id FROM users WHERE email = 'pharmacist@synapse.rw'), 1, 'RMDA-PHM-001');
 
--- Patients
 INSERT INTO users (email, password_hash, role, first_name, last_name, phone, language) VALUES
-  ('patient@synapse.rw', @pwd, 'patient', 'Eric', 'Habimana', '+250788000004', 'en'),
-  ('patient2@synapse.rw', @pwd, 'patient', 'Marie', 'Claire', '+250788000005', 'fr');
+  ('patient@synapse.rw', @demo_pwd, 'patient', 'Eric', 'Habimana', '+250788000004', 'en'),
+  ('patient2@synapse.rw', @demo_pwd, 'patient', 'Marie', 'Claire', '+250788000005', 'fr');
 
 INSERT INTO patient_profiles (user_id, date_of_birth, gender, blood_type, emergency_contact, emergency_phone) VALUES
   ((SELECT id FROM users WHERE email = 'patient@synapse.rw'), '1995-03-15', 'male', 'O+', 'Parent Habimana', '+250788999999'),
   ((SELECT id FROM users WHERE email = 'patient2@synapse.rw'), '1988-07-22', 'female', 'A+', 'Jean Claire', '+250788888888');
 
--- Patient health records
 INSERT INTO allergies (patient_id, allergen, reaction, severity, recorded_at) VALUES
   (1, 'Penicillin', 'Skin rash', 'severe', '2020-01-10'),
   (1, 'Peanuts', 'Anaphylaxis risk', 'severe', '2018-05-20');
@@ -52,7 +50,6 @@ INSERT INTO vaccinations (patient_id, vaccine_name, dose_number, administered_da
   (1, 'COVID-19', 3, '2023-10-01', NULL),
   (1, 'Tetanus', 1, '2024-03-15', '2034-03-15');
 
--- Pharmacy inventory
 INSERT INTO pharmacy_inventory (pharmacy_id, medicine_id, quantity, unit_price, last_updated_by) VALUES
   (1, 1, 500, 150.00, (SELECT id FROM users WHERE email = 'pharmacist@synapse.rw')),
   (1, 2, 200, 800.00, (SELECT id FROM users WHERE email = 'pharmacist@synapse.rw')),
@@ -62,13 +59,11 @@ INSERT INTO pharmacy_inventory (pharmacy_id, medicine_id, quantity, unit_price, 
   (3, 1, 100, 155.00, (SELECT id FROM users WHERE email = 'pharmacist@synapse.rw')),
   (3, 3, 80, 2600.00, (SELECT id FROM users WHERE email = 'pharmacist@synapse.rw'));
 
--- Drug interactions
 INSERT INTO drug_interactions (medicine_a_id, medicine_b_id, severity, description) VALUES
   (2, 6, 'moderate', 'Amoxicillin may reduce effectiveness of ibuprofen absorption when taken together.'),
   (4, 5, 'mild', 'Metformin and Amlodipine may cause mild additive blood pressure lowering effects.'),
   (2, 1, 'mild', 'No significant interaction between Amoxicillin and Paracetamol in most patients.');
 
--- Sample prescription
 INSERT INTO prescriptions (patient_id, doctor_id, diagnosis, notes, status) VALUES
   (1, 1, 'Upper Respiratory Infection', 'Rest and hydration recommended', 'approved');
 
@@ -76,7 +71,6 @@ INSERT INTO prescription_items (prescription_id, medicine_id, dosage, frequency,
   (1, 1, '500mg', 'Every 6 hours', '5 days', 20, 'Take after meals'),
   (1, 2, '500mg', 'Three times daily', '7 days', 21, 'Complete full course');
 
--- Analytics events
 INSERT INTO analytics_events (event_type, event_data, region) VALUES
   ('symptom_check', '{"symptoms":["fever","cough"]}', 'Kigali'),
   ('medicine_search', '{"medicine":"Paracetamol"}', 'Kigali'),

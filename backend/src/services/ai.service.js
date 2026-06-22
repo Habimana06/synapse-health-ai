@@ -36,26 +36,47 @@ const CHAT_RESPONSES = {
   },
 };
 
-async function callOpenAI(messages) {
-  if (!config.openaiApiKey) return null;
+async function callLLM(messages) {
+  if (config.groq.apiKey) {
+    const res = await fetch(`${config.groq.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${config.groq.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: config.groq.model,
+        messages,
+        temperature: 0.3,
+        max_tokens: 800,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || null;
+    }
+  }
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.openaiApiKey}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages,
-      temperature: 0.3,
-      max_tokens: 800,
-    }),
-  });
-
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content || null;
+  if (config.openaiApiKey) {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${config.openaiApiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages,
+        temperature: 0.3,
+        max_tokens: 800,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || null;
+    }
+  }
+  return null;
 }
 
 async function analyzeSymptoms({ symptoms, age, gender, existingConditions }) {
@@ -73,7 +94,7 @@ async function analyzeSymptoms({ symptoms, age, gender, existingConditions }) {
     confidence: 'moderate',
   };
 
-  const ai = await callOpenAI([
+  const ai = await callLLM([
     { role: 'system', content: 'You are a clinical decision support AI. Suggest possible conditions only, never diagnose. Respond in JSON: { possibleConditions: string[], disclaimer: string, confidence: string }' },
     { role: 'user', content: JSON.stringify({ symptoms: symptomList, age, gender, existingConditions }) },
   ]);
@@ -102,7 +123,7 @@ async function recommendDrugs({ diagnosis, age, medicalHistory, currentMedicatio
     disclaimer: 'AI-assisted recommendation. Final decision rests with the prescribing physician.',
   };
 
-  const ai = await callOpenAI([
+  const ai = await callLLM([
     { role: 'system', content: 'Clinical drug recommendation support. JSON: { recommendations: [{name,dosage,frequency}], notes, disclaimer }' },
     { role: 'user', content: JSON.stringify({ diagnosis, age, medicalHistory, currentMedications }) },
   ]);
@@ -153,7 +174,7 @@ async function chatResponse(message, language = 'en') {
   if (lower.includes('paracetamol') || lower.includes('paracetamol')) return lang.paracetamol;
   if (lower.includes('side effect')) return lang.side_effects;
 
-  const ai = await callOpenAI([
+  const ai = await callLLM([
     { role: 'system', content: `You are Synapse Health AI assistant. Language: ${language}. Provide helpful health information but always recommend consulting professionals. Keep responses concise.` },
     { role: 'user', content: message },
   ]);

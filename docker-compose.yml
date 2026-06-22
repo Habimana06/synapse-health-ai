@@ -4,10 +4,10 @@ services:
     container_name: synapse-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: synapse_root
+      MYSQL_ROOT_PASSWORD: "62001"
       MYSQL_DATABASE: synapse_health_ai
       MYSQL_USER: synapse
-      MYSQL_PASSWORD: synapse_pass
+      MYSQL_PASSWORD: "62001"
     ports:
       - "3307:3306"
     volumes:
@@ -15,7 +15,7 @@ services:
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psynapse_root"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p62001"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -26,18 +26,17 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
+    env_file:
+      - ./backend/.env
     environment:
       PORT: 5000
       NODE_ENV: production
       DB_HOST: mysql
       DB_PORT: 3306
       DB_USER: synapse
-      DB_PASSWORD: synapse_pass
+      DB_PASSWORD: "62001"
       DB_NAME: synapse_health_ai
-      JWT_SECRET: synapse-docker-jwt-secret-change-in-production
-      JWT_EXPIRES_IN: 7d
       CLIENT_URL: http://localhost:3000
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     depends_on:
       mysql:
         condition: service_healthy

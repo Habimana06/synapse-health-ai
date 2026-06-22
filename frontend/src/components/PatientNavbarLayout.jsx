@@ -10,6 +10,7 @@ const NAV = [
   { to: '/patient/chat', label: 'AI Chat' },
   { to: '/patient/pharmacies', label: 'Pharmacies' },
   { to: '/patient/medicines', label: 'Find Medicine' },
+  { to: '/patient/permissions', label: 'Permissions' },
 ];
 
 export default function PatientNavbarLayout() {

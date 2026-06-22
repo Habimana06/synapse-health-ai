@@ -26,10 +26,10 @@ export default function LoginPage() {
   };
 
   const demoAccounts = [
+    { email: 'hntaganira06@gmail.com', role: 'Admin' },
     { email: 'patient@synapse.rw', role: 'Patient' },
     { email: 'doctor@synapse.rw', role: 'Doctor' },
     { email: 'pharmacist@synapse.rw', role: 'Pharmacist' },
-    { email: 'admin@synapse.rw', role: 'Admin' },
   ];
 
   return (
@@ -38,7 +38,7 @@ export default function LoginPage() {
         <img src="/logo.png" alt="" className="mb-8 h-24 w-24" />
         <h1 className="text-4xl font-bold">Synapse Health AI</h1>
         <p className="mt-4 text-lg text-blue-100">Connecting Intelligence to Better Healthcare</p>
-        <p className="mt-8 text-sm text-blue-200">Demo password for all accounts: <strong>Password123!</strong></p>
+        <p className="mt-8 text-sm text-blue-200">Admin: hntaganira06@gmail.com · Demo patients use Password123!</p>
       </div>
 
       <div className="flex w-full flex-col justify-center px-6 lg:w-1/2 lg:px-16">
@@ -69,7 +69,10 @@ export default function LoginPage() {
             <p className="text-xs font-semibold uppercase text-gray-500">Demo Accounts</p>
             <div className="mt-2 space-y-1">
               {demoAccounts.map((a) => (
-                <button key={a.email} type="button" onClick={() => { setEmail(a.email); setPassword('Password123!'); }}
+                <button key={a.email} type="button" onClick={() => {
+                  setEmail(a.email);
+                  setPassword(a.role === 'Admin' ? '62001' : 'Password123!');
+                }}
                   className="block w-full rounded px-2 py-1 text-left text-sm text-synapse-navy hover:bg-white">
                   {a.role}: {a.email}
                 </button>

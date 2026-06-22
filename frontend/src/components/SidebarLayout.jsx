@@ -9,12 +9,14 @@ const MENUS = {
     { to: '/doctor/prescriptions', label: 'Prescriptions', icon: '💊' },
     { to: '/doctor/ai-recommend', label: 'AI Recommendations', icon: '🤖' },
     { to: '/doctor/labs', label: 'Lab Reports', icon: '🔬' },
+    { to: '/doctor/permissions', label: 'Permissions', icon: '🔐' },
   ],
   pharmacist: [
     { to: '/pharmacist', label: 'Dashboard', icon: '📊', end: true },
     { to: '/pharmacist/inventory', label: 'Inventory', icon: '📦' },
     { to: '/pharmacist/prescriptions', label: 'Prescriptions', icon: '💊' },
     { to: '/pharmacist/demand', label: 'Demand Trends', icon: '📈' },
+    { to: '/pharmacist/permissions', label: 'Permissions', icon: '🔐' },
   ],
   admin: [
     { to: '/admin', label: 'Dashboard', icon: '📊', end: true },
@@ -23,6 +25,7 @@ const MENUS = {
     { to: '/admin/hospitals', label: 'Hospitals', icon: '🏥' },
     { to: '/admin/medicines', label: 'Medicines', icon: '💊' },
     { to: '/admin/analytics', label: 'Analytics', icon: '📈' },
+    { to: '/admin/permissions', label: 'Permissions', icon: '🔐' },
   ],
 };
 

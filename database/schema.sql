@@ -21,6 +21,7 @@ CREATE TABLE users (
   phone         VARCHAR(20),
   language      ENUM('en', 'rw', 'fr') NOT NULL DEFAULT 'en',
   is_active     TINYINT(1) NOT NULL DEFAULT 1,
+  is_blocked    TINYINT(1) NOT NULL DEFAULT 0,
   created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_users_role (role),

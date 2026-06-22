@@ -1,70 +1,46 @@
-# Synapse Health AI
+# Synapse Health AI — Full Platform
 
-**Connecting Intelligence to Better Healthcare**
-
-AI-powered healthcare decision support platform for Rwanda — drug interactions, pharmacy integration, multilingual chat, and role-based portals.
-
-## Quick Start with Docker
+## Docker (recommended)
 
 ```bash
+# Copy and configure secrets (never commit backend/.env)
+cp backend/.env.example backend/.env
+# Edit backend/.env with Groq, SMTP, Twilio keys
+
+# Fresh database + all tables + seed data
+docker-compose down -v
 docker-compose up --build
 ```
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:5000/api/health |
-| MySQL | localhost:3307 |
+Open **http://localhost:3000**
 
-## Demo Login
+## Admin Login
 
-All accounts use password: **Password123!**
+| Field | Value |
+|-------|-------|
+| Email | hntaganira06@gmail.com |
+| Password | 62001 (stored bcrypt-hashed in DB) |
 
-| Role | Email |
-|------|-------|
-| Patient | patient@synapse.rw |
-| Doctor | doctor@synapse.rw |
-| Pharmacist | pharmacist@synapse.rw |
-| Admin | admin@synapse.rw |
+## Sign Up Rules
 
-## UI Layout
+- **Patients only** can self-register at `/register`
+- **Doctors, pharmacists, admins** are created by admin in **Admin → Users**
 
-- **Patient** → Top **navbar** navigation
-- **Doctor / Pharmacist / Admin** → Left **sidebar** navigation
-- Brand colors from logo: Navy, Teal, Green
+## Services
 
-## Local Development (without Docker)
+| Service | Technology |
+|---------|------------|
+| AI | Groq (llama-3.3-70b) — set `GROQ_API_KEY` |
+| Email | SMTP (Gmail) — set `MAIL_*` in `.env` |
+| SMS | Twilio — set `TWILIO_*` in `.env` |
+| Database | MySQL 8 in Docker, password `62001` |
 
-### Database
-```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p < database/seed.sql
-```
+## Role Layouts
 
-### Backend
-```bash
-cd backend && cp .env.example .env && npm install && npm run dev
-```
+- **Patient** → top navbar
+- **Doctor / Pharmacist / Admin** → left sidebar
+- Each role has its own **Permissions** page
 
-### Frontend
-```bash
-cd frontend && cp .env.example .env && npm install && npm run dev
-```
+## Admin User Management
 
-## Features
-
-- AI Symptom Analyzer & Health Risk Prediction
-- Drug Recommendation & Interaction Detection
-- Patient Digital Health Profile
-- Multilingual AI Chat (EN, Kinyarwanda, French)
-- Pharmacy Locator & Medicine Availability
-- Doctor, Pharmacist, Admin Dashboards
-- Healthcare Analytics
-
-## Tech Stack
-
-React · Vite · Tailwind · Node.js · Express · MySQL · JWT · Docker · OpenAI (optional)
-
-## Disclaimer
-
-Clinical **decision support** only — not a substitute for professional medical care.
+Create, edit, delete, activate/deactivate, block/unblock users.

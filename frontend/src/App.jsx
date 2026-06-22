@@ -16,17 +16,20 @@ import RiskAssessmentPage from './pages/patient/RiskAssessmentPage';
 import ChatPage from './pages/patient/ChatPage';
 import PharmacyLocatorPage from './pages/patient/PharmacyLocatorPage';
 import MedicineSearchPage from './pages/patient/MedicineSearchPage';
+import PatientPermissionsPage from './pages/patient/PatientPermissionsPage';
 
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import DoctorPatientsPage from './pages/doctor/DoctorPatientsPage';
 import DoctorPrescriptionsPage from './pages/doctor/DoctorPrescriptionsPage';
 import DoctorAIRecommendPage from './pages/doctor/DoctorAIRecommendPage';
 import DoctorLabsPage from './pages/doctor/DoctorLabsPage';
+import DoctorPermissionsPage from './pages/doctor/DoctorPermissionsPage';
 
 import PharmacistDashboard from './pages/pharmacist/PharmacistDashboard';
 import PharmacistInventoryPage from './pages/pharmacist/PharmacistInventoryPage';
 import PharmacistPrescriptionsPage from './pages/pharmacist/PharmacistPrescriptionsPage';
 import PharmacistDemandPage from './pages/pharmacist/PharmacistDemandPage';
+import PharmacistPermissionsPage from './pages/pharmacist/PharmacistPermissionsPage';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
@@ -34,6 +37,7 @@ import AdminPharmaciesPage from './pages/admin/AdminPharmaciesPage';
 import AdminHospitalsPage from './pages/admin/AdminHospitalsPage';
 import AdminMedicinesPage from './pages/admin/AdminMedicinesPage';
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage';
+import AdminPermissionsPage from './pages/admin/AdminPermissionsPage';
 
 function RoleRedirect() {
   const { user, loading } = useAuth();
@@ -62,6 +66,7 @@ function App() {
         <Route path="chat" element={<ChatPage />} />
         <Route path="pharmacies" element={<PharmacyLocatorPage />} />
         <Route path="medicines" element={<MedicineSearchPage />} />
+        <Route path="permissions" element={<PatientPermissionsPage />} />
       </Route>
 
       {/* Doctor — sidebar layout */}
@@ -71,6 +76,7 @@ function App() {
         <Route path="prescriptions" element={<DoctorPrescriptionsPage />} />
         <Route path="ai-recommend" element={<DoctorAIRecommendPage />} />
         <Route path="labs" element={<DoctorLabsPage />} />
+        <Route path="permissions" element={<DoctorPermissionsPage />} />
       </Route>
 
       {/* Pharmacist — sidebar layout */}
@@ -79,6 +85,7 @@ function App() {
         <Route path="inventory" element={<PharmacistInventoryPage />} />
         <Route path="prescriptions" element={<PharmacistPrescriptionsPage />} />
         <Route path="demand" element={<PharmacistDemandPage />} />
+        <Route path="permissions" element={<PharmacistPermissionsPage />} />
       </Route>
 
       {/* Admin — sidebar layout */}
@@ -89,6 +96,7 @@ function App() {
         <Route path="hospitals" element={<AdminHospitalsPage />} />
         <Route path="medicines" element={<AdminMedicinesPage />} />
         <Route path="analytics" element={<AdminAnalyticsPage />} />
+        <Route path="permissions" element={<AdminPermissionsPage />} />
       </Route>
 
       <Route path="/dashboard" element={<RoleRedirect />} />
