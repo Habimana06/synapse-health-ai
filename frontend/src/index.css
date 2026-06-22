@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-synapse-light text-synapse-navy antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-synapse-teal px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-synapse-teal focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border-2 border-synapse-navy px-6 py-3 text-sm font-semibold text-synapse-navy transition hover:bg-synapse-navy hover:text-white focus:outline-none focus:ring-2 focus:ring-synapse-navy focus:ring-offset-2;
+  }
+}
