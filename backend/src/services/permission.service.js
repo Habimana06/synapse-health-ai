@@ -2,11 +2,16 @@ const { pool } = require('../config/db');
 const { ROLE_PERMISSIONS } = require('../config/permissions');
 
 async function getUserPermissionOverrides(userId) {
-  const [rows] = await pool.query(
-    'SELECT permission_key, granted FROM user_permissions WHERE user_id = ?',
-    [userId]
-  );
-  return Object.fromEntries(rows.map((r) => [r.permission_key, r.granted === 1]));
+  try {
+    const [rows] = await pool.query(
+      'SELECT permission_key, granted FROM user_permissions WHERE user_id = ?',
+      [userId]
+    );
+    return Object.fromEntries(rows.map((r) => [r.permission_key, r.granted === 1]));
+  } catch (err) {
+    if (err.code === 'ER_NO_SUCH_TABLE') return {};
+    throw err;
+  }
 }
 
 async function getUserPermissions(userId, role) {
