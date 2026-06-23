@@ -4,6 +4,7 @@ const { pool } = require('../config/db');
 const { authenticate, authorize } = require('../middleware/auth');
 const { sendAccountCreatedEmail } = require('../services/email.service');
 const { sendAccountCreatedSms } = require('../services/sms.service');
+const { getUserPermissions, saveUserPermissions } = require('../services/permission.service');
 
 const router = express.Router();
 
@@ -164,6 +165,30 @@ router.delete('/users/:id', async (req, res, next) => {
     }
     await pool.query('DELETE FROM users WHERE id = ?', [req.params.id]);
     res.json({ success: true, message: 'User deleted successfully' });
+  } catch (err) { next(err); }
+});
+
+router.get('/users/:id/permissions', async (req, res, next) => {
+  try {
+    const [users] = await pool.query('SELECT id, role, first_name, last_name, email FROM users WHERE id = ?', [req.params.id]);
+    if (!users.length) return res.status(404).json({ success: false, message: 'User not found' });
+    const permissions = await getUserPermissions(users[0].id, users[0].role);
+    res.json({ success: true, data: { user: users[0], permissions } });
+  } catch (err) { next(err); }
+});
+
+router.put('/users/:id/permissions', async (req, res, next) => {
+  try {
+    const { permissions } = req.body;
+    if (!Array.isArray(permissions)) {
+      return res.status(400).json({ success: false, message: 'Permissions array required' });
+    }
+    const [users] = await pool.query('SELECT role FROM users WHERE id = ?', [req.params.id]);
+    if (!users.length) return res.status(404).json({ success: false, message: 'User not found' });
+
+    await saveUserPermissions(req.params.id, permissions, req.user.id);
+    const updated = await getUserPermissions(req.params.id, users[0].role);
+    res.json({ success: true, data: updated, message: 'Permissions saved successfully' });
   } catch (err) { next(err); }
 });
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { PageHeader, Card, Badge, Button, Input, Select } from '../../components/ui';
+import UserPermissionsEditor from '../../components/UserPermissionsEditor';
 
 const EMPTY_FORM = {
   email: '', password: '', firstName: '', lastName: '', phone: '', role: 'patient', language: 'en',
@@ -14,6 +15,7 @@ export default function AdminUsersPage() {
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editId, setEditId] = useState(null);
+  const [permUserId, setPermUserId] = useState(null);
   const [error, setError] = useState('');
 
   const load = () => {
@@ -137,6 +139,7 @@ export default function AdminUsersPage() {
                   </td>
                   <td>
                     <div className="flex flex-wrap gap-1">
+                      <Button variant="ghost" className="!px-2 !py-1 !text-xs" onClick={() => setPermUserId(u.id)}>Permissions</Button>
                       <Button variant="ghost" className="!px-2 !py-1 !text-xs" onClick={() => openEdit(u)}>Edit</Button>
                       <Button variant="ghost" className="!px-2 !py-1 !text-xs" onClick={() => toggleActive(u.id)}>
                         {u.is_active ? 'Deactivate' : 'Activate'}
@@ -197,6 +200,14 @@ export default function AdminUsersPage() {
                 <Button type="button" variant="secondary" onClick={() => setModal(null)}>Cancel</Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {permUserId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="mb-4 text-lg font-bold text-synapse-navy">Manage User Permissions</h3>
+            <UserPermissionsEditor userId={permUserId} onClose={() => setPermUserId(null)} />
           </div>
         </div>
       )}

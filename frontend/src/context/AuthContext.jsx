@@ -6,6 +6,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [permissions, setPermissions] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const loadUser = useCallback(async () => {
@@ -15,10 +16,12 @@ export function AuthProvider({ children }) {
       const { data } = await api.get('/auth/me');
       setUser(data.data.user);
       setProfile(data.data.profile);
+      setPermissions(data.data.permissions);
     } catch {
       localStorage.removeItem('token');
       setUser(null);
       setProfile(null);
+      setPermissions(null);
     } finally {
       setLoading(false);
     }
@@ -46,10 +49,24 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('token');
     setUser(null);
     setProfile(null);
+    setPermissions(null);
+  };
+
+  const hasPermission = useCallback((key) => {
+    if (!permissions?.permissions) return false;
+    const p = permissions.permissions.find((x) => x.key === key);
+    return p?.granted === true;
+  }, [permissions]);
+
+  const refreshPermissions = async () => {
+    const { data } = await api.get('/auth/permissions');
+    setPermissions(data.data);
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, login, register, logout, loadUser }}>
+    <AuthContext.Provider value={{
+      user, profile, permissions, loading, login, register, logout, loadUser, hasPermission, refreshPermissions,
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 const config = require('../config');
 const { authenticate } = require('../middleware/auth');
-const { getPermissions } = require('../config/permissions');
+const { getUserPermissions } = require('../services/permission.service');
 const { sanitizeUser } = require('../utils/helpers');
 const { sendWelcomeEmail } = require('../services/email.service');
 const { sendWelcomeSms } = require('../services/sms.service');
@@ -111,18 +111,40 @@ router.get('/me', authenticate, async (req, res, next) => {
       profile = rows[0] || null;
     }
 
-    res.json({ success: true, data: { user, profile, permissions: getPermissions(user.role) } });
+    const permissions = await getUserPermissions(user.id, user.role);
+    res.json({ success: true, data: { user, profile, permissions } });
   } catch (err) {
     next(err);
   }
 });
 
-router.get('/permissions', authenticate, (req, res) => {
-  const permissions = getPermissions(req.user.role);
-  if (!permissions) {
-    return res.status(404).json({ success: false, message: 'Permissions not found' });
+router.put('/profile', authenticate, async (req, res, next) => {
+  try {
+    const { firstName, lastName, phone, language, password } = req.body;
+    await pool.query(
+      'UPDATE users SET first_name=?, last_name=?, phone=?, language=? WHERE id=?',
+      [firstName, lastName, phone, language, req.user.id]
+    );
+    if (password) {
+      const hash = await bcrypt.hash(password, 10);
+      await pool.query('UPDATE users SET password_hash=? WHERE id=?', [hash, req.user.id]);
+    }
+    res.json({ success: true, message: 'Profile updated' });
+  } catch (err) {
+    next(err);
   }
-  res.json({ success: true, data: permissions });
+});
+
+router.get('/permissions', authenticate, async (req, res, next) => {
+  try {
+    const permissions = await getUserPermissions(req.user.id, req.user.role);
+    if (!permissions) {
+      return res.status(404).json({ success: false, message: 'Permissions not found' });
+    }
+    res.json({ success: true, data: permissions });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

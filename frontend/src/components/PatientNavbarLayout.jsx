@@ -1,83 +1,88 @@
-import { Outlet, Link, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
-const NAV = [
-  { to: '/patient', label: 'Dashboard', end: true },
-  { to: '/patient/health', label: 'Health Profile' },
-  { to: '/patient/prescriptions', label: 'Prescriptions' },
-  { to: '/patient/symptoms', label: 'Symptom Analyzer' },
-  { to: '/patient/risk', label: 'Risk Assessment' },
-  { to: '/patient/chat', label: 'AI Chat' },
-  { to: '/patient/pharmacies', label: 'Pharmacies' },
-  { to: '/patient/medicines', label: 'Find Medicine' },
-  { to: '/patient/permissions', label: 'Permissions' },
-];
+import ProfileDropdown from './ProfileDropdown';
+import { PATIENT_NAV } from '../config/navigation';
 
 export default function PatientNavbarLayout() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { hasPermission, user } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const visibleNav = PATIENT_NAV.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !item.permission || hasPermission(item.permission)),
+  })).filter((g) => g.items.length > 0);
+
+  const flatNav = visibleNav.flatMap((g) => g.items);
 
   return (
-    <div className="min-h-screen bg-synapse-light">
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link to="/patient" className="flex items-center gap-2">
-            <img src="/logo.png" alt="" className="h-9 w-9" />
-            <span className="font-bold text-synapse-navy">SYNAPSE</span>
-            <span className="text-xs font-medium text-synapse-teal">Patient</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30">
+      <header className="sticky top-0 z-50 border-b border-gray-200/80 bg-white/90 backdrop-blur-lg shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 lg:px-8">
+          <Link to="/patient" className="flex shrink-0 items-center gap-2.5">
+            <img src="/logo.png" alt="" className="h-10 w-10 drop-shadow-sm" />
+            <div>
+              <p className="text-base font-bold tracking-tight text-synapse-navy">SYNAPSE</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-synapse-teal">Patient Portal</p>
+            </div>
           </Link>
 
-          <nav className="hidden items-center gap-1 lg:flex">
-            {NAV.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  `rounded-lg px-3 py-2 text-sm font-medium transition ${
-                    isActive ? 'bg-synapse-teal/10 text-synapse-teal' : 'text-gray-600 hover:bg-gray-50 hover:text-synapse-navy'
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
+          <nav className="hidden flex-1 items-center justify-center gap-6 xl:flex">
+            {visibleNav.map((group) => (
+              <div key={group.group} className="flex items-center gap-1">
+                <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">{group.group}</span>
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.end}
+                    className={({ isActive }) =>
+                      `flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                        isActive
+                          ? 'bg-synapse-teal text-white shadow-md shadow-synapse-teal/25'
+                          : 'text-gray-600 hover:bg-synapse-teal/5 hover:text-synapse-navy'
+                      }`
+                    }
+                  >
+                    <span className="text-base">{item.icon}</span>
+                    {item.label}
+                  </NavLink>
+                ))}
+              </div>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-gray-600 sm:block">{user?.first_name} {user?.last_name}</span>
-            <button type="button" onClick={handleLogout} className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">
-              Logout
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="hidden rounded-lg bg-synapse-green/10 px-3 py-1.5 text-xs font-medium text-synapse-green md:block">
+              {user?.language?.toUpperCase() || 'EN'}
+            </div>
+            <ProfileDropdown role="patient" />
           </div>
         </div>
 
-        <nav className="flex gap-1 overflow-x-auto border-t border-gray-100 px-4 py-2 lg:hidden">
-          {NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ${
-                  isActive ? 'bg-synapse-teal text-white' : 'bg-gray-100 text-gray-600'
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+        <nav className="flex gap-2 overflow-x-auto border-t border-gray-100 px-4 py-3 xl:hidden">
+          {flatNav.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                    `flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition ${
+                      isActive ? 'bg-synapse-navy text-white' : 'bg-gray-100 text-gray-600'
+                    }`
+                  }
+                >
+                  {item.icon} {item.label}
+                </NavLink>
+              ))}
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Outlet />
       </main>
+
+      <footer className="mt-auto border-t border-gray-200 bg-white py-4 text-center text-xs text-gray-400">
+        Synapse Health AI · Clinical decision support only
+      </footer>
     </div>
   );
 }

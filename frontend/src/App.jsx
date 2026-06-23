@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth, getDashboardPath } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import PermissionGate from './components/PermissionGate';
 import Layout from './components/Layout';
 import PatientNavbarLayout from './components/PatientNavbarLayout';
 import SidebarLayout from './components/SidebarLayout';
@@ -10,6 +11,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 
 import PatientDashboard from './pages/patient/PatientDashboard';
 import PatientHealthPage from './pages/patient/PatientHealthPage';
+import PatientProfilePage from './pages/patient/PatientProfilePage';
 import PatientPrescriptionsPage from './pages/patient/PatientPrescriptionsPage';
 import SymptomAnalyzerPage from './pages/patient/SymptomAnalyzerPage';
 import RiskAssessmentPage from './pages/patient/RiskAssessmentPage';
@@ -39,6 +41,8 @@ import AdminMedicinesPage from './pages/admin/AdminMedicinesPage';
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage';
 import AdminPermissionsPage from './pages/admin/AdminPermissionsPage';
 
+import StaffProfilePage from './pages/shared/StaffProfilePage';
+
 function RoleRedirect() {
   const { user, loading } = useAuth();
   if (loading) return null;
@@ -56,46 +60,46 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* Patient — top navbar layout */}
       <Route path="/patient" element={<ProtectedRoute roles={['patient']}><PatientNavbarLayout /></ProtectedRoute>}>
-        <Route index element={<PatientDashboard />} />
-        <Route path="health" element={<PatientHealthPage />} />
-        <Route path="prescriptions" element={<PatientPrescriptionsPage />} />
-        <Route path="symptoms" element={<SymptomAnalyzerPage />} />
-        <Route path="risk" element={<RiskAssessmentPage />} />
-        <Route path="chat" element={<ChatPage />} />
-        <Route path="pharmacies" element={<PharmacyLocatorPage />} />
-        <Route path="medicines" element={<MedicineSearchPage />} />
+        <Route index element={<PermissionGate permission="view_dashboard"><PatientDashboard /></PermissionGate>} />
+        <Route path="profile" element={<PatientProfilePage />} />
+        <Route path="health" element={<PermissionGate permission="manage_profile"><PatientHealthPage /></PermissionGate>} />
+        <Route path="prescriptions" element={<PermissionGate permission="view_prescriptions"><PatientPrescriptionsPage /></PermissionGate>} />
+        <Route path="symptoms" element={<PermissionGate permission="symptom_analyzer"><SymptomAnalyzerPage /></PermissionGate>} />
+        <Route path="risk" element={<PermissionGate permission="health_risk"><RiskAssessmentPage /></PermissionGate>} />
+        <Route path="chat" element={<PermissionGate permission="ai_chat"><ChatPage /></PermissionGate>} />
+        <Route path="pharmacies" element={<PermissionGate permission="pharmacy_search"><PharmacyLocatorPage /></PermissionGate>} />
+        <Route path="medicines" element={<PermissionGate permission="pharmacy_search"><MedicineSearchPage /></PermissionGate>} />
         <Route path="permissions" element={<PatientPermissionsPage />} />
       </Route>
 
-      {/* Doctor — sidebar layout */}
       <Route path="/doctor" element={<ProtectedRoute roles={['doctor']}><SidebarLayout role="doctor" /></ProtectedRoute>}>
-        <Route index element={<DoctorDashboard />} />
-        <Route path="patients" element={<DoctorPatientsPage />} />
-        <Route path="prescriptions" element={<DoctorPrescriptionsPage />} />
-        <Route path="ai-recommend" element={<DoctorAIRecommendPage />} />
-        <Route path="labs" element={<DoctorLabsPage />} />
+        <Route index element={<PermissionGate permission="view_dashboard"><DoctorDashboard /></PermissionGate>} />
+        <Route path="profile" element={<StaffProfilePage roleLabel="Doctor" />} />
+        <Route path="patients" element={<PermissionGate permission="view_patients"><DoctorPatientsPage /></PermissionGate>} />
+        <Route path="prescriptions" element={<PermissionGate permission="create_prescription"><DoctorPrescriptionsPage /></PermissionGate>} />
+        <Route path="ai-recommend" element={<PermissionGate permission="ai_drug_recommend"><DoctorAIRecommendPage /></PermissionGate>} />
+        <Route path="labs" element={<PermissionGate permission="add_lab_results"><DoctorLabsPage /></PermissionGate>} />
         <Route path="permissions" element={<DoctorPermissionsPage />} />
       </Route>
 
-      {/* Pharmacist — sidebar layout */}
       <Route path="/pharmacist" element={<ProtectedRoute roles={['pharmacist']}><SidebarLayout role="pharmacist" /></ProtectedRoute>}>
-        <Route index element={<PharmacistDashboard />} />
-        <Route path="inventory" element={<PharmacistInventoryPage />} />
-        <Route path="prescriptions" element={<PharmacistPrescriptionsPage />} />
-        <Route path="demand" element={<PharmacistDemandPage />} />
+        <Route index element={<PermissionGate permission="view_dashboard"><PharmacistDashboard /></PermissionGate>} />
+        <Route path="profile" element={<StaffProfilePage roleLabel="Pharmacist" />} />
+        <Route path="inventory" element={<PermissionGate permission="manage_inventory"><PharmacistInventoryPage /></PermissionGate>} />
+        <Route path="prescriptions" element={<PermissionGate permission="view_prescriptions"><PharmacistPrescriptionsPage /></PermissionGate>} />
+        <Route path="demand" element={<PermissionGate permission="view_demand"><PharmacistDemandPage /></PermissionGate>} />
         <Route path="permissions" element={<PharmacistPermissionsPage />} />
       </Route>
 
-      {/* Admin — sidebar layout */}
       <Route path="/admin" element={<ProtectedRoute roles={['admin']}><SidebarLayout role="admin" /></ProtectedRoute>}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<AdminUsersPage />} />
-        <Route path="pharmacies" element={<AdminPharmaciesPage />} />
-        <Route path="hospitals" element={<AdminHospitalsPage />} />
-        <Route path="medicines" element={<AdminMedicinesPage />} />
-        <Route path="analytics" element={<AdminAnalyticsPage />} />
+        <Route index element={<PermissionGate permission="view_dashboard"><AdminDashboard /></PermissionGate>} />
+        <Route path="profile" element={<StaffProfilePage roleLabel="Administrator" />} />
+        <Route path="users" element={<PermissionGate permission="manage_users"><AdminUsersPage /></PermissionGate>} />
+        <Route path="pharmacies" element={<PermissionGate permission="manage_pharmacies"><AdminPharmaciesPage /></PermissionGate>} />
+        <Route path="hospitals" element={<PermissionGate permission="manage_hospitals"><AdminHospitalsPage /></PermissionGate>} />
+        <Route path="medicines" element={<PermissionGate permission="manage_medicines"><AdminMedicinesPage /></PermissionGate>} />
+        <Route path="analytics" element={<PermissionGate permission="view_analytics"><AdminAnalyticsPage /></PermissionGate>} />
         <Route path="permissions" element={<AdminPermissionsPage />} />
       </Route>
 
